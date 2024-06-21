@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@common/*": [
+        "./src/renderer/src/common/*"
+      ],
+      "@pages/*": [
+        "./src/renderer/src/pages/*"
+      ]
+    }
+  }
+}
