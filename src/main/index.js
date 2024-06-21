@@ -1,8 +1,8 @@
-import {app, shell, BrowserWindow} from "electron";
+import {app, shell, BrowserWindow, ipcMain} from "electron";
 import {join} from "path";
 import {electronApp, optimizer, is} from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
-
+import {retrievePartitions} from "./util/partition";
 
 const createWindow = async () => {
     const mainWindow = new BrowserWindow({
@@ -22,9 +22,12 @@ const createWindow = async () => {
 
     mainWindow.on('ready-to-show', () => mainWindow.show());
 
+    ipcMain.handle('request-partitions', retrievePartitions);
+    ipcMain.on("close-app", () => app.quit());
+
     mainWindow.webContents.setWindowOpenHandler((details) => {
-        shell.openExternal(details.url)
-        return {action: 'deny'}
+        shell.openExternal(details.url);
+        return {action: 'deny'};
     });
 
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -35,7 +38,7 @@ const createWindow = async () => {
 }
 
 app.whenReady().then(() => {
-    electronApp.setAppUserModelId('com.electron')
+    electronApp.setAppUserModelId('de.gnmyt');
 
     app.on('browser-window-created', (_, window) => optimizer.watchWindowShortcuts(window));
 
