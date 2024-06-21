@@ -3,7 +3,8 @@ import {join} from "path";
 import {electronApp, optimizer, is} from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
-const createWindow = () => {
+
+const createWindow = async () => {
     const mainWindow = new BrowserWindow({
         width: 1049,
         height: 600,
@@ -16,6 +17,8 @@ const createWindow = () => {
             sandbox: false
         }
     });
+
+    mainWindow.removeMenu();
 
     mainWindow.on('ready-to-show', () => mainWindow.show());
 
