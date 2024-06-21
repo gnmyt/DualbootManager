@@ -51,3 +51,5 @@ markdown_extensions:
 
 nav:
   - index.md
+  - installation/index.md
+  - configuration/index.md
