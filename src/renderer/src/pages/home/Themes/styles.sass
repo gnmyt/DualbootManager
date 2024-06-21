@@ -1,0 +1,41 @@
+.themes-page
+  display: flex
+  flex-direction: column
+  padding: 2rem
+
+.themes-area
+  display: flex
+  flex-wrap: wrap
+  gap: 1rem
+  justify-content: center
+  height: 80vh
+  overflow: hidden
+  overflow-y: scroll
+
+
+.theme
+  border: 2px solid #575555
+  background-color: rgba(28, 33, 36, 0.3)
+  border-radius: 1rem
+  width: 14rem
+
+  .theme-inner
+    padding: 1rem 0.5rem
+
+  img
+    width: 14rem
+    border-radius: calc(1rem - 2px) calc(1rem - 2px) 0 0
+  .theme-title
+    display: flex
+    align-items: center
+    gap: 0.3rem
+
+    h2
+      font-size: 16pt
+      margin: 0
+    p
+      font-size: 12pt
+      margin: 0
+  .theme-description
+    font-size: 9pt
+    color: #C7C7C7
