@@ -14,8 +14,13 @@
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "@fontsource/roboto": "^5.0.13",
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "electron-updater": "^6.1.7",
+    "framer-motion": "^11.2.11",
     "react-router-dom": "^6.23.1",
+    "react-transition-group": "^4.4.5",
     "sass": "^1.77.6",
     "sudo-prompt": "^9.2.1"
   },
