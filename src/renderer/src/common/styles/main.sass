@@ -5,8 +5,11 @@ html, body
   margin: 0
   padding: 0
   color: #FFFFFF
-  user-select: none
   overflow: hidden
+
+*
+  -webkit-user-drag: none
+  user-select: none
 
 .blur
   z-index: -1
@@ -37,3 +40,13 @@ html, body
   opacity: 0
   transform: scale(0.9)
   transition: opacity 500ms, transform 500ms
+
+.space-inner
+  padding: 3rem 5rem
+
+::-webkit-scrollbar
+  width: 0.5rem
+
+::-webkit-scrollbar-thumb
+  background: rgba(255, 255, 255, 0.50)
+  border-radius: 1rem
