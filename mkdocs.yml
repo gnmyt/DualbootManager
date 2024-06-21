@@ -1,0 +1,53 @@
+site_name: Dualboot Manager
+site_description: Make the installation and configuration of the CLOVER bootloader possible with just a few clicks
+site_author: Mathias Wagner
+copyright: Copyright &copy; 2024 Mathias Wagner
+
+repo_name: DualbootManager
+repo_url: https://github.com/gnmyt/DualbootManager
+edit_uri: https://github.com/gnmyt/DualbootManager/tree/main/docs/
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  language: en
+  palette:
+    scheme: slate
+    primary: black
+    accent: blue
+
+  favicon: assets/logo.png
+  logo: assets/logo.png
+  features:
+    - toc.integrate
+    - content.code.annotate
+    - content.code.copy
+    - navigation.tabs
+
+extra_css:
+  - "stylesheets/extra.css"
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/gnmyt/DualbootManager
+    - icon: fontawesome/solid/heart
+      link: https://ko-fi.com/gnmyt
+    - icon: fontawesome/brands/discord
+      link: https://discord.com/users/386242172632170496
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.twemoji
+
+nav:
+  - index.md
