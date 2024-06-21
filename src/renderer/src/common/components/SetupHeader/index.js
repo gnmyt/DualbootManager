@@ -1,0 +1,1 @@
+export {SetupHeader as default} from "./SetupHeader";
