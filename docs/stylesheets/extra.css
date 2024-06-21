@@ -39,6 +39,11 @@ body {
     background-color: hsla(0, 0%, 0%, 0.3);
 }
 
+.md-typeset .admonition,
+.md-typeset details {
+    background-color: transparent;
+}
+
 [data-md-color-scheme="slate"] .md-header {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
