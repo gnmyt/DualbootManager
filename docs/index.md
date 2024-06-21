@@ -1,6 +1,6 @@
 ---
 title: Home
-icon: material/home
+icon: fontawesome/solid/house
 hide:
     - navigation
     - toc
