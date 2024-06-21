@@ -3,6 +3,10 @@ import {join} from "path";
 import {electronApp, optimizer, is} from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 import {retrievePartitions} from "./util/partition";
+import * as fs from "node:fs";
+import {getThemes} from "./util/themes";
+
+export const INSTALLATION_PATH = join(app.getPath('userData'), 'appdata');
 
 const createWindow = async () => {
     const mainWindow = new BrowserWindow({
@@ -23,6 +27,7 @@ const createWindow = async () => {
     mainWindow.on('ready-to-show', () => mainWindow.show());
 
     ipcMain.handle('request-partitions', retrievePartitions);
+    ipcMain.handle('request-themes', getThemes);
     ipcMain.on("close-app", () => app.quit());
 
     mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -46,3 +51,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => app.quit());
+
+if (!fs.existsSync(INSTALLATION_PATH)) {
+    fs.mkdirSync(INSTALLATION_PATH, {recursive: true});
+}
