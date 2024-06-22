@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "electron-vite dev",
     "postinstall": "electron-builder install-app-deps",
-    "build": "electron-vite build && electron-builder --linux"
+    "build": "electron-vite build && electron-builder --linux --publish=never"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
