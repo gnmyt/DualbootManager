@@ -1,5 +1,6 @@
 import "./styles.sass";
 import {useEffect, useState} from "react";
+import Navigation from "@common/components/Navigation";
 
 export const Themes = () => {
     const [themes, setThemes] = useState([]);
@@ -10,6 +11,7 @@ export const Themes = () => {
 
     return (
         <div className="themes-page">
+            <Navigation />
             <div className="themes-area">
                 {themes.map((theme, index) => (
                     <div key={index} className="theme">
