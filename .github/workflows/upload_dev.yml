@@ -29,10 +29,13 @@ jobs:
       - name: Get the latest release tag
         id: get_latest_tag
         run: |
-          latest_tag=$(git describe --tags --abbrev=0)
-          commits=$(git log --pretty=format:"%h - %s [%an]" $latest_tag..HEAD)
-          printf -v formatted_commits "%s\n" "$commits"
-          echo "commits=$formatted_commits" >> $GITHUB_ENV
+          {
+            latest_tag=$(git describe --tags --abbrev=0)
+            commits=$(git log --pretty=format:"%h - %s [%an]" $latest_tag..HEAD)
+            echo "commits<<EOF"
+            echo "$commits"
+            echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Determine new pre-release version
         id: determine_version
