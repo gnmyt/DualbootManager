@@ -31,12 +31,7 @@ jobs:
         run: |
           latest_tag=$(git describe --tags --abbrev=0)
           echo "latest_tag=$latest_tag" >> $GITHUB_ENV
-          git log --pretty=format:"%h - %s (%an)" $latest_tag..HEAD >> commits.txt
-
-      - name: Read commits from file
-        id: read_commits
-        run: |
-          cat commits.txt >> $GITHUB_ENV
+          echo "commits=$(git log --pretty=format:\"%h - %s (%an)\" $latest_tag..HEAD)" >> $GITHUB_ENV
 
       - name: Determine new pre-release version
         id: determine_version
