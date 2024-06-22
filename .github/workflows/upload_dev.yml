@@ -45,7 +45,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           tag_name: v${{ env.new_version }}
           release_name: v${{ env.new_version }}
@@ -54,20 +54,20 @@ jobs:
             ## Changes
             ${{ steps.get_latest_tag.outputs.commits }}
 
-      - name: Upload Release Assets
+      - name: Upload Release Assets - AppImage
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dist/dualbootmgr-*.AppImage
           asset_name: dualbootmgr-${{ env.new_version }}.AppImage
           asset_content_type: application/octet-stream
 
-      - name: Upload Release Assets
+      - name: Upload Release Assets - DEB
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dist/dualbootmgr_*.deb
