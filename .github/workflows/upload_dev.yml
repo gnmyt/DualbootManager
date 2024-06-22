@@ -31,6 +31,7 @@ jobs:
         run: |
           {
             latest_tag=$(git describe --tags --abbrev=0)
+            echo "latest_tag=$latest_tag" >> $GITHUB_ENV
             commits=$(git log --pretty=format:"%h - %s [%an]" $latest_tag..HEAD)
             echo "commits<<EOF"
             echo "$commits"
