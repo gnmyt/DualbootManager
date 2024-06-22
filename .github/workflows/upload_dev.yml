@@ -26,7 +26,9 @@ jobs:
 
       - name: Get the latest release tag
         id: get_latest_tag
-        run: echo "latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
+        run: |
+          latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "none")
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
 
       - name: Determine new pre-release version
         id: determine_version
