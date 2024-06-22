@@ -53,6 +53,13 @@ jobs:
           echo "deb_file=$(ls dist/*.deb)" >> $GITHUB_OUTPUT
           echo "appimage_file=$(ls dist/*.AppImage)" >> $GITHUB_OUTPUT
 
+      - name: Get the latest release tag and commits
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0)
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+          git log --format="- %s (%h)" "$latest_tag..HEAD" >> $GITHUB_ENV
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -64,7 +71,7 @@ jobs:
           prerelease: true
           body: |
             ## Changes
-            ${{ steps.get_latest_tag.outputs.commits }}
+            ${{ env.commits }}
 
       - name: Upload Release Assets - AppImage
         uses: actions/upload-release-asset@v1
