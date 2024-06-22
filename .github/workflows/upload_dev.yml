@@ -1,0 +1,75 @@
+name: Build and release development version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build script
+        run: npm run build
+
+      - name: Get the latest release tag
+        id: get_latest_tag
+        run: echo "latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
+
+      - name: Determine new pre-release version
+        id: determine_version
+        run: |
+          latest_tag=${{ env.latest_tag }}
+          package_version=$(node -p "require('./package.json').version")
+          if [[ "$latest_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-pre\.([0-9]+)$ ]]; then
+            pre_version=$((BASH_REMATCH[1] + 1))
+          else
+            pre_version=1
+          fi
+          new_version="${package_version}-pre.${pre_version}"
+          echo "new_version=$new_version" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.new_version }}
+          release_name: v${{ env.new_version }}
+          prerelease: true
+          body: |
+            ## Changes
+            ${{ steps.get_latest_tag.outputs.commits }}
+
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/dualbootmgr-*.AppImage
+          asset_name: dualbootmgr-${{ env.new_version }}.AppImage
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/dualbootmgr_*.deb
+          asset_name: dualbootmgr_${{ env.new_version }}.deb
+          asset_content_type: application/octet-stream
