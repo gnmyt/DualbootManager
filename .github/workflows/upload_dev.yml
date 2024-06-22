@@ -40,6 +40,16 @@ jobs:
           fi
           new_version="${package_version}-pre.${pre_version}"
           echo "new_version=$new_version" >> $GITHUB_ENV
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+
+      - name: List build artifacts
+        id: list_artifacts
+        run: |
+          ls dist/
+          echo "appimage_file=$(ls dist/*.AppImage)" >> $GITHUB_ENV
+          echo "deb_file=$(ls dist/*.deb)" >> $GITHUB_ENV
+          echo "appimage_file=$(ls dist/*.AppImage)" >> $GITHUB_OUTPUT
+          echo "deb_file=$(ls dist/*.deb)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         id: create_release
@@ -47,8 +57,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.new_version }}
-          release_name: v${{ env.new_version }}
+          tag_name: v${{ steps.determine_version.outputs.new_version }}
+          release_name: v${{ steps.determine_version.outputs.new_version }}
           prerelease: true
           body: |
             ## Changes
@@ -60,8 +70,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/dualbootmgr-*.AppImage
-          asset_name: dualbootmgr-${{ env.new_version }}.AppImage
+          asset_path: ${{ steps.list_artifacts.outputs.appimage_file }}
+          asset_name: dualbootmgr-${{ steps.determine_version.outputs.new_version }}.AppImage
           asset_content_type: application/octet-stream
 
       - name: Upload Release Assets - DEB
@@ -70,6 +80,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/dualbootmgr_*.deb
-          asset_name: dualbootmgr_${{ env.new_version }}.deb
+          asset_path: ${{ steps.list_artifacts.outputs.deb_file }}
+          asset_name: dualbootmgr_${{ steps.determine_version.outputs.new_version }}.deb
           asset_content_type: application/octet-stream
