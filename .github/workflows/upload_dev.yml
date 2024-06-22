@@ -45,10 +45,7 @@ jobs:
       - name: List build artifacts
         id: list_artifacts
         run: |
-          ls dist/
-          echo "appimage_file=$(ls dist/*.AppImage)" >> $GITHUB_ENV
           echo "deb_file=$(ls dist/*.deb)" >> $GITHUB_ENV
-          echo "appimage_file=$(ls dist/*.AppImage)" >> $GITHUB_OUTPUT
           echo "deb_file=$(ls dist/*.deb)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
