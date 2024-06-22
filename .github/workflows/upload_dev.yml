@@ -29,9 +29,9 @@ jobs:
       - name: Get the latest release tag
         id: get_latest_tag
         run: |
-          latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "none")
+          latest_tag=$(git describe --tags --abbrev=0)
           echo "latest_tag=$latest_tag" >> $GITHUB_ENV
-          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+          git log --format="- %s (%h)" "$latest_tag..HEAD" >> $GITHUB_ENV
 
       - name: Determine new pre-release version
         id: determine_version
@@ -52,13 +52,6 @@ jobs:
         run: |
           echo "deb_file=$(ls dist/*.deb)" >> $GITHUB_OUTPUT
           echo "appimage_file=$(ls dist/*.AppImage)" >> $GITHUB_OUTPUT
-
-      - name: Get the latest release tag and commits
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git describe --tags --abbrev=0)
-          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
-          git log --format="- %s (%h)" "$latest_tag..HEAD" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         id: create_release
