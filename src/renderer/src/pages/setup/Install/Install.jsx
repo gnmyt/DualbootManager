@@ -6,7 +6,7 @@ import {motion, AnimatePresence} from "framer-motion";
 import CloverImage from "./assets/clover.png";
 import KofiImage from "./assets/kofi.png";
 import ProgressBar from "@pages/setup/Install/components/ProgressBar";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 
 const slides = [
     {
@@ -33,22 +33,59 @@ export const Install = () => {
     const [partitions] = useContext(PartitionContext);
     const [slideShown, setSlideShown] = useState(1);
     const [progress, setProgress] = useState(0);
+    const [currentStep, setCurrentStep] = useState("Downloading CloverBootloader from GitHub");
     const navigate = useNavigate();
 
+    const [query] = useSearchParams();
+    const disk = query.get("disk");
+    const partition = query.get("partition");
+
+    const startProgressTimer = (minProgress, maxProgress) => setInterval(() =>
+        setProgress(previous => Math.min(previous + Math.random() * 5, maxProgress)), 1000);
+
+    const runStep = async (startProgress, endProgress, stepMessage, invokeMessage, invokeArgs = []) => {
+        setCurrentStep(stepMessage);
+        const progressInterval = startProgressTimer(startProgress, endProgress);
+        try {
+            await window.electron.ipcRenderer.invoke(invokeMessage, ...invokeArgs);
+        } catch (error) {
+            console.error("Error during installation step: ", error);
+            navigate("/setup/partition");
+        }
+        clearInterval(progressInterval);
+        setProgress(endProgress);
+
+        return true;
+    };
+
+    const runInstallationSteps = async () => {
+        const selectedPartition = partitions.find(part => part.disk === disk && part.partition === parseInt(partition));
+        if (!selectedPartition) {
+            navigate("/setup/partition");
+            return;
+        }
+
+        await runStep(0, 20, "Downloading CloverBootloader from GitHub", "download-clover");
+        await runStep(20, 70, "Downloading CloverThemes from GitHub", "download-themes");
+        await runStep(70, 90, "Deleting invalid themes", "delete-invalid-themes");
+        await runStep(90, 90, "Installing CloverBootloader", "install-clover", [disk, partition]);
+
+        setProgress(100);
+        console.log("Installation finished");
+    };
+
     useEffect(() => {
+        const stepRunner = setTimeout(() => runInstallationSteps(), 1000);
+
         const interval = setInterval(() => {
             setSlideShown(previous => (previous + 1) % slides.length);
         }, 7000);
 
         setProgress(0);
 
-        const progressInterval = setInterval(() => {
-            setProgress(previous => previous + Math.random() * 10);
-        }, 1000);
-
         return () => {
             clearInterval(interval);
-            clearInterval(progressInterval);
+            clearTimeout(stepRunner);
         }
     }, []);
 
@@ -74,7 +111,7 @@ export const Install = () => {
                 </AnimatePresence>
             </div>
             <ProgressBar progress={progress}/>
-            <p className="current-step">Downloading CloverThemes from GitHub</p>
+            <p className="current-step">{currentStep}</p>
         </div>
     );
 }
