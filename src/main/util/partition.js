@@ -1,4 +1,7 @@
 import sudo from "sudo-prompt";
+import fs from "node:fs";
+import path from "node:path";
+import {INSTALLATION_PATH} from "../index";
 
 export const retrievePartitions = async () => {
     return new Promise((resolve, reject) => {
@@ -38,4 +41,12 @@ const parsePartedOutput = (input) => {
     });
 
     return partitions;
+}
+
+export const retrieveBootloaderMount = async () => {
+    if (fs.existsSync(path.join(INSTALLATION_PATH, 'bootloader_installed'))) {
+        return fs.readFileSync(path.join(INSTALLATION_PATH, 'bootloader_installed'), 'utf8');
+    }
+
+    return null;
 }
