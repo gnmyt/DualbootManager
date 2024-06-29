@@ -59,22 +59,25 @@ export const downloadBootloader = async () => {
         return false;
     }
 };
-export const mountAndInstallBootloader = async (partition) => {
+export const mountAndInstallBootloader = async (disk, partition) => {
     const mountDir = path.join(INSTALLATION_PATH, 'efi_tmp');
     if (!fs.existsSync(mountDir)) fs.mkdirSync(mountDir);
 
     const bootloaderPath = path.join(INSTALLATION_PATH, 'bootloader');
 
+    const diskPartition = disk + (disk.startsWith("/dev/nvme") ? "p" : "") + partition;
+
     const bashCommand = `
-        existing_mount_point=$(findmnt -rn -o TARGET ${partition})
+        existing_mount_point=$(findmnt -rn -o TARGET ${diskPartition})
         if [ -z "$existing_mount_point" ]; then
-            mount ${partition} ${mountDir}
+            mount ${diskPartition} ${mountDir}
             mount_point=${mountDir}
         else
             mount_point=$existing_mount_point
         fi
         if [ ! -d $mount_point/EFI ]; then exit 1; fi
         cp -r ${bootloaderPath}/* $mount_point/EFI
+        efibootmgr -c -d ${disk} -p ${partition} -L "Clover Bootloader" -l "\\EFI\\BOOT\\BOOTX64.efi"
     `;
 
     fs.writeFileSync(path.join(INSTALLATION_PATH, 'install.sh'), bashCommand);
@@ -85,6 +88,8 @@ export const mountAndInstallBootloader = async (partition) => {
                 reject(error);
                 return;
             }
+
+            fs.writeFileSync(path.join(INSTALLATION_PATH, 'bootloader_installed'), diskPartition);
 
             resolve();
         });
