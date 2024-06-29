@@ -2,9 +2,11 @@ import {app, shell, BrowserWindow, ipcMain} from "electron";
 import {join} from "path";
 import {electronApp, optimizer, is} from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
-import {retrievePartitions} from "./util/partition";
+import {retrievePartitions, retrieveBootloaderMount} from "./util/partition";
 import * as fs from "node:fs";
 import {getThemes} from "./util/themes";
+import {deleteInvalidThemes, downloadBootloader, downloadThemes, mountAndInstallBootloader} from "./util/installer";
+import sudo from "sudo-prompt";
 
 export const INSTALLATION_PATH = join(app.getPath('userData'), 'appdata');
 
@@ -26,9 +28,23 @@ const createWindow = async () => {
 
     mainWindow.on('ready-to-show', () => mainWindow.show());
 
+    ipcMain.handle("request-bootloader-mount", retrieveBootloaderMount);
     ipcMain.handle('request-partitions', retrievePartitions);
     ipcMain.handle('request-themes', getThemes);
+
     ipcMain.on("close-app", () => app.quit());
+    ipcMain.on("reboot-to-bios", () => {
+        sudo.exec(`systemctl reboot --firmware-setup`, {name: 'Clover Bootloader Installer'}, (error) => {
+            if (error) {
+                console.error("Error rebooting to BIOS: ", error);
+            }
+        });
+    });
+
+    ipcMain.handle("download-clover", downloadBootloader);
+    ipcMain.handle("download-themes", downloadThemes);
+    ipcMain.handle("install-clover", (_, disk, partition) => mountAndInstallBootloader(disk, partition));
+    ipcMain.handle("delete-invalid-themes", () => deleteInvalidThemes(join(INSTALLATION_PATH, 'themes')));
 
     mainWindow.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url);
