@@ -2,7 +2,7 @@ import {createContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import "./styles.sass";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCodeCommit, faFileUpload, faSave} from "@fortawesome/free-solid-svg-icons";
+import {faSave} from "@fortawesome/free-solid-svg-icons";
 
 export const ConfigurationContext = createContext({});
 
@@ -11,6 +11,7 @@ export const ConfigurationProvider = ({children}) => {
 
     const [configuration, setConfiguration] = useState({});
     const [unsavedChanges, setUnsavedChanges] = useState(false);
+    const [missingDependencies, setMissingDependencies] = useState([]);
 
     const loadConfiguration = () => {
         window.electron.ipcRenderer.invoke("get-config").then(setConfiguration);
@@ -36,8 +37,14 @@ export const ConfigurationProvider = ({children}) => {
     }
 
     useEffect(() => {
-        window.electron.ipcRenderer.invoke("request-bootloader-mount")
-            .then((data) => {
+        window.electron.ipcRenderer.invoke("check-binaries").then((notInstalled) => {
+            if (notInstalled.length > 0) {
+                setMissingDependencies(notInstalled);
+                navigate("/setup/dependencies");
+                return;
+            }
+
+            window.electron.ipcRenderer.invoke("request-bootloader-mount").then((data) => {
                 if (data === null) {
                     navigate("/setup/uac-prompt");
                     return;
@@ -45,16 +52,17 @@ export const ConfigurationProvider = ({children}) => {
 
                 navigate("/home/uac-prompt");
             });
+        });
     }, []);
 
     return (
-        <ConfigurationContext.Provider value={{configuration, loadConfiguration, updateConfiguration}}>
+        <ConfigurationContext.Provider value={{configuration, loadConfiguration, updateConfiguration, missingDependencies}}>
             {children}
             <button className={"save-button" + (unsavedChanges ? "" : " save-btn-hidden")} onClick={async () => {
                 await window.electron.ipcRenderer.invoke("commit-transaction");
                 setUnsavedChanges(false);
             }}>
-                <FontAwesomeIcon icon={faSave} />
+                <FontAwesomeIcon icon={faSave}/>
                 <p>Save Changes</p>
             </button>
         </ConfigurationContext.Provider>
