@@ -7,6 +7,7 @@ import * as fs from "node:fs";
 import {getThemes} from "./util/themes";
 import {deleteInvalidThemes, downloadBootloader, downloadThemes, mountAndInstallBootloader} from "./util/installer";
 import sudo from "sudo-prompt";
+import {commitTransaction, copyTheme, getConfig, startTransaction, updateConfig} from "./util/config";
 
 export const INSTALLATION_PATH = join(app.getPath('userData'), 'appdata');
 
@@ -46,6 +47,12 @@ const createWindow = async () => {
     ipcMain.handle("download-themes", downloadThemes);
     ipcMain.handle("install-clover", (_, disk, partition) => mountAndInstallBootloader(disk, partition));
     ipcMain.handle("delete-invalid-themes", () => deleteInvalidThemes(join(INSTALLATION_PATH, 'themes')));
+    ipcMain.handle("copy-theme", (_, theme) => copyTheme(theme));
+
+    ipcMain.handle("start-transaction", startTransaction);
+    ipcMain.handle("commit-transaction", commitTransaction);
+    ipcMain.handle("get-config", getConfig);
+    ipcMain.handle("update-config", (_, config) => updateConfig(config));
 
     mainWindow.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url);
