@@ -4,6 +4,7 @@ import path from "node:path";
 import axios from "axios";
 import AdmZip from "adm-zip";
 import sudo from "sudo-prompt";
+import {getDefaultConfig} from "./config";
 
 
 export const download = async (url, assetName,dest) => {
@@ -65,6 +66,8 @@ export const mountAndInstallBootloader = async (disk, partition) => {
 
     const bootloaderPath = path.join(INSTALLATION_PATH, 'bootloader');
 
+    const config = await getDefaultConfig();
+
     const diskPartition = disk + (disk.startsWith("/dev/nvme") ? "p" : "") + partition;
 
     const bashCommand = `
@@ -77,6 +80,7 @@ export const mountAndInstallBootloader = async (disk, partition) => {
         fi
         if [ ! -d $mount_point/EFI ]; then exit 1; fi
         cp -r ${bootloaderPath}/* $mount_point/EFI
+        echo "${config}" > $mount_point/EFI/CLOVER/config.plist
         efibootmgr -c -d ${disk} -p ${partition} -L "Clover Bootloader" -l "\\EFI\\BOOT\\BOOTX64.efi"
     `;
 
