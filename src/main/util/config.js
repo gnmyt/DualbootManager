@@ -49,24 +49,28 @@ const DEFAULT_CONFIG = `<?xml version="1.0" encoding="UTF-8"?>
         </dict>
     </dict>
 </plist>`;
+
+export const retrieveFormattedEntries = async () => {
+    const entries = await retrieveEFIEntries();
+    const formattedEntries = entries.map(entry => {
+        return {
+            Path: entry.path,
+            Image: `os_${entry.name.toLowerCase().replace(/\s+/g, '_')}`,
+            FullTitle: entry.name.charAt(0).toUpperCase() + entry.name.slice(1),
+            Title: entry.name.charAt(0).toUpperCase() + entry.name.slice(1),
+            Type: entry.name.includes("Windows") ? "Windows" : "Linux",
+            Volume: entry.uid
+        };
+    });
+
+    return formattedEntries;
+}
+
 export const getDefaultConfig = async () => {
     try {
         const defaultConfig = plist.parse(DEFAULT_CONFIG);
 
-        const bootEntries = await retrieveEFIEntries();
-
-        const formattedEntries = bootEntries.map(entry => {
-            return {
-                Path: entry.path,
-                Image: `os_${entry.name.toLowerCase().replace(/\s+/g, '_')}`,
-                FullTitle: entry.name.charAt(0).toUpperCase() + entry.name.slice(1),
-                Title: entry.name.charAt(0).toUpperCase() + entry.name.slice(1),
-                Type: entry.name.includes("Windows") ? "Windows" : "Linux",
-                Volume: entry.uid
-            };
-        });
-
-        defaultConfig.GUI.Custom.Entries = formattedEntries;
+        defaultConfig.GUI.Custom.Entries = await retrieveFormattedEntries();
 
         return plist.build(defaultConfig);
 
