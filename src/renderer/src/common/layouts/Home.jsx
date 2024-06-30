@@ -1,5 +1,9 @@
+import {Outlet} from "react-router-dom";
+
 export default () => {
     return (
-        <h2>Home</h2>
+        <div className="home">
+            <Outlet/>
+        </div>
     );
 }
