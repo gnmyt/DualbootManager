@@ -10,6 +10,8 @@ import sudo from "sudo-prompt";
 import {commitTransaction, copyTheme, getConfig, startTransaction, updateConfig} from "./util/config";
 
 export const INSTALLATION_PATH = join(app.getPath('userData'), 'appdata');
+export const REQUIRED_BINARIES = ['efibootmgr', 'pkexec', 'mount', 'umount', 'findmnt', 'cp', 'rm', 'bash',
+    'chmod', 'echo', 'parted', 'grep'];
 
 const createWindow = async () => {
     const mainWindow = new BrowserWindow({
@@ -33,6 +35,19 @@ const createWindow = async () => {
     ipcMain.handle("request-efi-entries", retrieveEFIEntries);
     ipcMain.handle('request-partitions', retrievePartitions);
     ipcMain.handle('request-themes', getThemes);
+
+    ipcMain.handle("check-binaries", () => {
+        return new Promise((resolve) => {
+            let notInstalled = [];
+            for (const dependency of REQUIRED_BINARIES) {
+                if (!fs.existsSync(`/usr/bin/${dependency}`) && !fs.existsSync(`/usr/sbin/${dependency}`)) {
+                    notInstalled.push(dependency);
+                }
+            }
+
+            resolve(notInstalled);
+        });
+    });
 
     ipcMain.on("close-app", () => app.quit());
     ipcMain.on("reboot-to-bios", () => {
