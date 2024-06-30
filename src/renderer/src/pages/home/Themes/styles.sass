@@ -21,6 +21,11 @@
 
   .theme-inner
     padding: 1rem 0.5rem
+    height: 3.2rem
+    overflow: hidden
+  .theme-actions
+    display: flex
+    padding: 1rem 0.5rem
 
   img
     width: 14rem
@@ -33,9 +38,16 @@
     h2
       font-size: 16pt
       margin: 0
+      white-space: nowrap
     p
       font-size: 12pt
+      overflow: hidden
+      white-space: nowrap
+      text-overflow: ellipsis
       margin: 0
   .theme-description
-    font-size: 9pt
+    font-size: 10pt
     color: #C7C7C7
+
+.theme-active
+  border: 2px solid #9A1D5C
