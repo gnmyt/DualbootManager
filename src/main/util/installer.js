@@ -82,6 +82,7 @@ export const mountAndInstallBootloader = async (disk, partition) => {
         cp -r ${bootloaderPath}/* $mount_point/EFI
         echo "${config}" > $mount_point/EFI/CLOVER/config.plist
         efibootmgr -c -d ${disk} -p ${partition} -L "Clover Bootloader" -l "\\EFI\\BOOT\\BOOTX64.efi"
+        efibootmgr -o $(efibootmgr | grep "Clover Bootloader" | grep -oP "(?<=Boot)([0-9]+)")
     `;
 
     fs.writeFileSync(path.join(INSTALLATION_PATH, 'install.sh'), bashCommand);
