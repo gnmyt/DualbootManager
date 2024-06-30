@@ -1,0 +1,64 @@
+.setting-row
+  display: flex
+  align-items: center
+  justify-content: space-between
+  background-color: rgba(28, 33, 36, 0.3)
+  border: 1px solid #585858
+  padding: 0.6rem 1rem
+  border-radius: 1rem
+
+  .settings-left
+    display: flex
+    align-items: center
+    gap: 1rem
+
+    svg
+      color: #9A1D5C
+      height: 2rem
+      width: 2rem
+
+    h2
+      margin: 0
+
+    p
+      margin: 0
+      color: #C7C7C7
+
+  input, select
+    background-color: rgba(28, 33, 36, 0.3)
+    border: 1px solid #585858
+    width: 8rem
+    color: #FFFFFF
+    font-size: 12pt
+    font-weight: 500
+    padding: 0.5rem
+    border-radius: 0.5rem
+
+  select option
+    background-color: rgba(28, 33, 36, 1)
+
+  input[type='range']
+    -webkit-appearance: none
+    appearance: none
+    background-color: #051923
+    height: 0.5rem
+    outline: none
+    padding: 0
+    margin: 0
+
+    &::-webkit-slider-thumb
+      -webkit-appearance: none
+      appearance: none
+      width: 1rem
+      height: 1rem
+      background-color: #9A1D5C
+      border-radius: 50%
+      cursor: pointer
+
+  .slider-row
+    display: flex
+    gap: 1rem
+    align-items: center
+
+    h2
+      margin: 0
