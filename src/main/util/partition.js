@@ -75,8 +75,9 @@ export const retrieveEFIEntries = async () => {
                 return;
             }
 
+
             resolve(JSON.parse(stdout).map(entry => ({...entry, uid: entry.uid.toUpperCase()}))
-                .filter(entry => entry.path.startsWith("\\EFI\\") && !entry.path.includes("CLOVER")));
+                .filter(entry => entry.path.startsWith("\\EFI\\") && !entry.name.includes("Clover")));
         });
     });
 }
