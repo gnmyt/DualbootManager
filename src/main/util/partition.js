@@ -2,6 +2,7 @@ import sudo from "sudo-prompt";
 import fs from "node:fs";
 import path from "node:path";
 import {INSTALLATION_PATH} from "../index";
+import {exec} from "child_process";
 
 export const retrievePartitions = async () => {
     return new Promise((resolve, reject) => {
@@ -49,4 +50,33 @@ export const retrieveBootloaderMount = async () => {
     }
 
     return null;
+}
+
+export const retrieveEFIEntries = async () => {
+    const bashCommand = '#!/bin/bash\n' +
+        'json_array="["\n' +
+        'while IFS= read -r line; do\n' +
+        '    if [[ $line =~ Boot[0-9A-Fa-f]{4} ]]; then\n' +
+        '        name=$(echo "$line" | grep -oP \'(?<=Boot[0-9A-Fa-f]{4}\\* )[^\\s]+\' | sed \'s/\\\\/\\\\\\\\/g\')\n' +
+        '        uid=$(echo "$line" | grep -oP \'(?<=,GPT,)[0-9a-fA-F-]+\')\n' +
+        '        path=$(echo "$line" | grep -oP \'(?<=File\\().*(?=\\))\' | sed \'s/\\\\/\\\\\\\\/g\')\n' +
+        '        json_array+="{\\"name\\":\\"$name\\",\\"uid\\":\\"$uid\\",\\"path\\":\\"$path\\"},"\n' +
+        '    fi\n' +
+        'done < <(efibootmgr -v)\n' +
+        'json_array="${json_array%,}]"\n' +
+        'echo "$json_array"';
+
+    fs.writeFileSync(path.join(INSTALLATION_PATH, 'efi_entries.sh'), bashCommand);
+
+    return new Promise((resolve, reject) => {
+        exec(`bash ${path.join(INSTALLATION_PATH, 'efi_entries.sh')}`, (error, stdout) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            resolve(JSON.parse(stdout).map(entry => ({...entry, uid: entry.uid.toUpperCase()}))
+                .filter(entry => entry.path.startsWith("\\EFI\\") && !entry.path.includes("CLOVER")));
+        });
+    });
 }
