@@ -10,20 +10,27 @@ import "@fontsource/roboto/500.css";
 import Root from "@common/layouts/Root";
 import {PartitionProvider} from "@common/contexts/PartitionContext";
 import Setup from "@common/layouts/Setup";
-import UACPrompt from "@pages/setup/UACPrompt";
+import {default as UACPromptSetup} from "@pages/setup/UACPrompt";
 import Welcome from "@pages/setup/Welcome";
 import Partition from "@pages/setup/Partition";
 import Install from "@pages/setup/Install";
 import Finished from "@pages/setup/Finished";
+import {default as UACPromptHome} from "@pages/home/UACPrompt";
 import Themes from "@pages/home/Themes";
+import Home from "@common/layouts/Home";
+import Settings from "@pages/home/Settings";
+import Update from "@pages/home/Update";
 
 export const routes = [
-    {path: "/setup/uac-prompt", element: <UACPrompt/>, nodeRef: createRef()},
+    {path: "/setup/uac-prompt", element: <UACPromptSetup/>, nodeRef: createRef()},
     {path: "/setup/welcome", element: <Welcome/>, nodeRef: createRef()},
     {path: "/setup/partition", element: <Partition/>, nodeRef: createRef()},
     {path: "/setup/install", element: <Install/>, nodeRef: createRef()},
     {path: "/setup/finished", element: <Finished/>, nodeRef: createRef()},
-    {path: "/home/themes", element: <Themes/>, nodeRef: createRef()}
+    {path: "/home/uac-prompt", element: <UACPromptHome/>, nodeRef: createRef()},
+    {path: "/home/themes", element: <Themes/>, nodeRef: createRef()},
+    {path: "/home/settings", element: <Settings/>, nodeRef: createRef()},
+    {path: "/home/update", element: <Update/>, nodeRef: createRef()}
 ];
 
 const router = createHashRouter([
@@ -38,7 +45,7 @@ const router = createHashRouter([
             },
             {
                 path: "/home",
-                element: <Root/>,
+                element: <Home/>,
                 children: routes.filter(route => route.path.startsWith("/home")).map(route => ({
                     ...route, path: route.path.replace("/home/", "")
                 }))
