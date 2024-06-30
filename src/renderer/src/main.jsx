@@ -10,6 +10,7 @@ import "@fontsource/roboto/500.css";
 import Root from "@common/layouts/Root";
 import {PartitionProvider} from "@common/contexts/PartitionContext";
 import Setup from "@common/layouts/Setup";
+import Dependencies from "@pages/setup/Dependencies";
 import {default as UACPromptSetup} from "@pages/setup/UACPrompt";
 import Welcome from "@pages/setup/Welcome";
 import Partition from "@pages/setup/Partition";
@@ -22,6 +23,7 @@ import Settings from "@pages/home/Settings";
 import Update from "@pages/home/Update";
 
 export const routes = [
+    {path: "/setup/dependencies", element: <Dependencies/>, nodeRef: createRef()},
     {path: "/setup/uac-prompt", element: <UACPromptSetup/>, nodeRef: createRef()},
     {path: "/setup/welcome", element: <Welcome/>, nodeRef: createRef()},
     {path: "/setup/partition", element: <Partition/>, nodeRef: createRef()},
