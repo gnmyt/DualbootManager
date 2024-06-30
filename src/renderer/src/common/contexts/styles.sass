@@ -1,0 +1,43 @@
+.save-button
+  position: absolute
+  z-index: 100
+  bottom: 0
+  right: 0
+  margin: 1rem 1rem
+  background-color: #9A1D5C
+  filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.5))
+  border: none
+  color: #FFFFFF
+  display: flex
+  align-items: center
+  gap: 1rem
+  padding: 0.6rem 1rem
+  border-radius: 0.75rem
+  animation: flyIn 0.2s ease-out
+  cursor: pointer
+
+  p
+    margin: 0
+    font-size: 12pt
+    font-weight: 500
+
+  svg
+    width: 1.2rem
+    height: 1.2rem
+
+.save-btn-hidden
+  animation: flyOut 0.2s ease-in forwards
+
+@keyframes flyIn
+  from
+    transform: translateY(3rem)
+  to
+    transform: translateY(0)
+
+@keyframes flyOut
+  from
+    transform: translateY(0)
+  to
+    transform: translateY(3rem)
+  to
+    display: none
