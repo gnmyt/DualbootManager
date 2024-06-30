@@ -2,12 +2,19 @@ import {app, shell, BrowserWindow, ipcMain} from "electron";
 import {join} from "path";
 import {electronApp, optimizer, is} from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
-import {retrievePartitions, retrieveBootloaderMount, retrieveEFIEntries} from "./util/partition";
+import {retrievePartitions, retrieveBootloaderMount} from "./util/partition";
 import * as fs from "node:fs";
 import {getThemes} from "./util/themes";
 import {deleteInvalidThemes, downloadBootloader, downloadThemes, mountAndInstallBootloader} from "./util/installer";
 import sudo from "sudo-prompt";
-import {commitTransaction, copyTheme, getConfig, startTransaction, updateConfig} from "./util/config";
+import {
+    commitTransaction,
+    copyTheme,
+    getConfig,
+    retrieveFormattedEntries,
+    startTransaction,
+    updateConfig
+} from "./util/config";
 
 export const INSTALLATION_PATH = join(app.getPath('userData'), 'appdata');
 export const REQUIRED_BINARIES = ['efibootmgr', 'pkexec', 'mount', 'umount', 'findmnt', 'cp', 'rm', 'bash',
@@ -32,7 +39,7 @@ const createWindow = async () => {
     mainWindow.on('ready-to-show', () => mainWindow.show());
 
     ipcMain.handle("request-bootloader-mount", retrieveBootloaderMount);
-    ipcMain.handle("request-efi-entries", retrieveEFIEntries);
+    ipcMain.handle("request-efi-entries", retrieveFormattedEntries);
     ipcMain.handle('request-partitions', retrievePartitions);
     ipcMain.handle('request-themes', getThemes);
 
