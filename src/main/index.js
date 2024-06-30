@@ -2,7 +2,7 @@ import {app, shell, BrowserWindow, ipcMain} from "electron";
 import {join} from "path";
 import {electronApp, optimizer, is} from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
-import {retrievePartitions, retrieveBootloaderMount} from "./util/partition";
+import {retrievePartitions, retrieveBootloaderMount, retrieveEFIEntries} from "./util/partition";
 import * as fs from "node:fs";
 import {getThemes} from "./util/themes";
 import {deleteInvalidThemes, downloadBootloader, downloadThemes, mountAndInstallBootloader} from "./util/installer";
@@ -29,6 +29,7 @@ const createWindow = async () => {
     mainWindow.on('ready-to-show', () => mainWindow.show());
 
     ipcMain.handle("request-bootloader-mount", retrieveBootloaderMount);
+    ipcMain.handle("request-efi-entries", retrieveEFIEntries);
     ipcMain.handle('request-partitions', retrievePartitions);
     ipcMain.handle('request-themes', getThemes);
 
