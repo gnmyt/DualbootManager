@@ -12,6 +12,7 @@ export const ConfigurationProvider = ({children}) => {
     const [configuration, setConfiguration] = useState({});
     const [unsavedChanges, setUnsavedChanges] = useState(false);
     const [missingDependencies, setMissingDependencies] = useState([]);
+    const [firstLoad, setFirstLoad] = useState(true);
 
     const loadConfiguration = () => {
         window.electron.ipcRenderer.invoke("get-config").then(setConfiguration);
@@ -19,6 +20,7 @@ export const ConfigurationProvider = ({children}) => {
 
     const updateConfiguration = (key, value) => {
         setUnsavedChanges(true);
+        setFirstLoad(false);
         setConfiguration((prev) => {
             const newConfiguration = {...prev};
             const keys = key.split(".");
@@ -58,7 +60,7 @@ export const ConfigurationProvider = ({children}) => {
     return (
         <ConfigurationContext.Provider value={{configuration, loadConfiguration, updateConfiguration, missingDependencies}}>
             {children}
-            <button className={"save-button" + (unsavedChanges ? "" : " save-btn-hidden")} onClick={async () => {
+            <button className={"save-button" + (unsavedChanges ? "" : " save-btn-hidden") + (firstLoad ? " save-btn-none" : "")} onClick={async () => {
                 await window.electron.ipcRenderer.invoke("commit-transaction");
                 setUnsavedChanges(false);
             }}>
